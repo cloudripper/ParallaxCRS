@@ -1,0 +1,89 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+*.secret
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.netrc
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node and frontend tooling
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.next/
+out/
+coverage/
+
+# Logs and runtime state
+*.log
+logs/
+tmp/
+temp/
+.tmp/
+
+# OSS-CRS generated work directories and artifacts
+.work/
+work/
+workdir/
+oss-crs-work/
+oss-crs-workdir/
+artifacts/
+generated/
+runs/
+
+# Ignore downloaded targets and local submissions.
+targets/*
+!targets/.gitkeep
+submissions/*
+!submissions/.gitkeep
+
+# Docker Compose local overrides
+compose.override.yaml
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Tool databases and analysis outputs
+*.sarif
+*.profraw
+*.profdata
+.codeql/
+codeql-dbs/
+crashes/
+corpus/
+findings/

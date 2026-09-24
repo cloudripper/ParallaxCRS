@@ -1,0 +1,10 @@
+schema_version: 1
+
+submission:
+  name: crc-template
+
+crs:
+  finder:
+    path: crs/crs-finder-claude-code
+  patcher:
+    path: crs/crs-patcher-claude-code

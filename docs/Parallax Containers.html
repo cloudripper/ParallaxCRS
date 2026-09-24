@@ -1,0 +1,3296 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf8" />
+        <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1,viewport-fit=cover"
+        />
+        <style>
+            :root {
+                color-scheme: light;
+                box-sizing: border-box;
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+            html {
+                scroll-padding-top: env(safe-area-inset-top, 0px);
+            }
+            body {
+                margin: 0;
+                padding: 0;
+                font:
+                    14px -apple-system,
+                    BlinkMacSystemFont,
+                    sans-serif;
+                background: #faf9f5;
+                color: #141413;
+            }
+            img {
+                max-width: 100%;
+            }
+            [hidden]:not([hidden="until-found" i]) {
+                display: none !important;
+            }
+        </style>
+    </head>
+    <body>
+        <title>Parallax Containers</title>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        />
+        <style>
+            :root {
+                color-scheme: light;
+                --ground: #f4f6f8;
+                --surface: #ffffff;
+                --surface-2: #ebeff3;
+                --ink: #17212c;
+                --muted: #5c6b7a;
+                --rule: #d6dce3;
+                --rule-strong: #b9c3cd;
+                --framework: #2d5b8e;
+                --cull: #0e6b59;
+                --ccf: #8a3a62;
+                --build: #ad5312;
+                --warn: #a32b2b;
+                --ok: #2f7d4f;
+                --tint: rgba(23, 33, 44, 0.05);
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) {
+                    color-scheme: dark;
+                    --ground: #0f151d;
+                    --surface: #161e28;
+                    --surface-2: #1d2732;
+                    --ink: #e4eaf0;
+                    --muted: #95a4b4;
+                    --rule: #273240;
+                    --rule-strong: #3a4756;
+                    --framework: #79aee0;
+                    --cull: #38bc9f;
+                    --ccf: #de93b6;
+                    --build: #e79246;
+                    --warn: #e8776f;
+                    --ok: #6dcb92;
+                    --tint: rgba(228, 234, 240, 0.06);
+                }
+            }
+            :root[data-theme="dark"] {
+                color-scheme: dark;
+                --ground: #0f151d;
+                --surface: #161e28;
+                --surface-2: #1d2732;
+                --ink: #e4eaf0;
+                --muted: #95a4b4;
+                --rule: #273240;
+                --rule-strong: #3a4756;
+                --framework: #79aee0;
+                --cull: #38bc9f;
+                --ccf: #de93b6;
+                --build: #e79246;
+                --warn: #e8776f;
+                --ok: #6dcb92;
+                --tint: rgba(228, 234, 240, 0.06);
+            }
+
+            body {
+                background: var(--ground);
+                color: var(--ink);
+                font-family:
+                    "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+                font-size: 16px;
+                line-height: 1.6;
+                margin: 0;
+            }
+            .wrap {
+                max-width: 76rem;
+                margin: 0 auto;
+                padding-inline: 20px;
+                padding-block: 40px 72px;
+            }
+            h1,
+            h2,
+            h3 {
+                font-family: Bitter, Georgia, serif;
+                text-wrap: balance;
+                margin: 0;
+            }
+            h1 {
+                font-size: clamp(2.1rem, 5vw, 3.2rem);
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                line-height: 1.05;
+            }
+            h2 {
+                font-size: 1.32rem;
+                font-weight: 600;
+                margin-block: 0 0.2rem;
+            }
+            h3 {
+                font-size: 1rem;
+                font-weight: 600;
+                margin-block: 0 0.15rem;
+            }
+            p {
+                margin: 0 0 0.85rem;
+            }
+            .lede {
+                font-size: 1.06rem;
+                color: var(--muted);
+                max-width: 64ch;
+            }
+            .eyebrow {
+                font-family: "IBM Plex Mono", ui-monospace, monospace;
+                font-size: 0.7rem;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+            header.page {
+                border-bottom: 2px solid var(--rule-strong);
+                padding-bottom: 26px;
+                margin-bottom: 34px;
+            }
+            header.page h1 {
+                margin-block: 6px 10px;
+            }
+            header.page .meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 22px;
+                margin-top: 16px;
+            }
+            header.page .meta span {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 0.78rem;
+                color: var(--muted);
+            }
+
+            section {
+                margin-bottom: 44px;
+            }
+            .sec-head {
+                display: flex;
+                align-items: baseline;
+                gap: 14px;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+                border-bottom: 1px solid var(--rule);
+            }
+            .sec-head .num {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 0.78rem;
+                color: var(--muted);
+                border: 1px solid var(--rule-strong);
+                border-radius: 3px;
+                padding: 1px 6px;
+                flex: none;
+            }
+            .body-col {
+                max-width: 68ch;
+            }
+
+            .verdict {
+                background: var(--surface);
+                border: 1px solid var(--rule);
+                border-left: 4px solid var(--build);
+                padding: 20px 22px;
+                margin-bottom: 20px;
+            }
+            .verdict p:last-child {
+                margin-bottom: 0;
+            }
+
+            figure {
+                margin: 22px 0 8px;
+            }
+            .figbox {
+                background: var(--surface);
+                border: 1px solid var(--rule);
+                padding: 16px;
+                overflow-x: auto;
+            }
+            figure svg {
+                display: block;
+                max-width: 100%;
+                height: auto;
+                min-width: 620px;
+            }
+            figcaption {
+                font-size: 0.85rem;
+                color: var(--muted);
+                margin-top: 10px;
+                max-width: 72ch;
+            }
+            figcaption b {
+                color: var(--ink);
+                font-weight: 600;
+            }
+
+            .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 20px;
+                margin: 14px 0 4px;
+            }
+            .legend span {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 0.82rem;
+                font-family: "IBM Plex Mono", monospace;
+            }
+            .legend i {
+                width: 13px;
+                height: 13px;
+                border-radius: 2px;
+                border: 1.5px solid;
+                flex: none;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.9rem;
+                margin: 6px 0 4px;
+            }
+            .tablewrap {
+                overflow-x: auto;
+            }
+            th,
+            td {
+                text-align: left;
+                padding: 8px 12px 8px 0;
+                border-bottom: 1px solid var(--rule);
+                vertical-align: top;
+            }
+            th {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 0.7rem;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted);
+                font-weight: 500;
+            }
+            td code,
+            code {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 0.84em;
+                background: var(--tint);
+                padding: 1px 4px;
+                border-radius: 2px;
+            }
+            .nw td:first-child {
+                white-space: nowrap;
+            }
+            .pill {
+                font-family: "IBM Plex Mono", monospace;
+                font-size: 0.68rem;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                padding: 2px 7px;
+                border-radius: 2px;
+                border: 1px solid;
+                white-space: nowrap;
+            }
+            .pill.ok {
+                color: var(--ok);
+                border-color: var(--ok);
+            }
+            .pill.part {
+                color: var(--build);
+                border-color: var(--build);
+            }
+            .pill.no {
+                color: var(--warn);
+                border-color: var(--warn);
+            }
+
+            .callout {
+                border-left: 3px solid var(--framework);
+                padding: 4px 0 4px 16px;
+                margin: 18px 0;
+                font-size: 0.95rem;
+                max-width: 70ch;
+            }
+            .callout b {
+                font-weight: 600;
+            }
+            .callout.rule {
+                border-left-color: var(--warn);
+            }
+            .callout p:last-child {
+                margin-bottom: 0;
+            }
+
+            .cols {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 22px;
+            }
+            .card {
+                background: var(--surface);
+                border: 1px solid var(--rule);
+                padding: 16px 18px;
+            }
+            .card h3 {
+                margin-bottom: 6px;
+            }
+            .card p {
+                font-size: 0.92rem;
+                margin-bottom: 0;
+                color: var(--muted);
+            }
+            .card p b {
+                color: var(--ink);
+                font-weight: 600;
+            }
+
+            a {
+                color: var(--framework);
+                text-decoration-thickness: 1px;
+                text-underline-offset: 2px;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+        </style>
+
+        <div class="wrap">
+            <header class="page">
+                <div class="eyebrow">
+                    Parallax &middot; container architecture
+                </div>
+                <h1>Parallax Containers</h1>
+                <p class="lede">
+                    What the finder and the patcher actually are as programs:
+                    their build phases, their processes, the loop each one runs,
+                    and the single gate that decides whether either earns a
+                    point. Plus an honest read on whether the upstream work is
+                    far enough along to start.
+                </p>
+                <div class="meta">
+                    <span>two containers</span>
+                    <span>one shared oracle</span>
+                    <span>16 vCPU &middot; $50 each</span>
+                    <span>drop date 3 Oct</span>
+                </div>
+            </header>
+
+            <div class="verdict">
+                <div class="eyebrow" style="margin-bottom: 8px">
+                    Are we in shape to start
+                </div>
+                <p>
+                    <b>Yes, start now.</b> Everything left on both upstream
+                    lists is packaging, interface and enforcement work, not
+                    research. Nine days of engineering against known shapes is a
+                    schedule; nine days of research would not be. The algorithms
+                    that had to be proven are proven: 66 traced databases, every
+                    labelled CVE write ranked, no verdict changes.
+                </p>
+                <p>
+                    <b>Two items are research-shaped and can slip.</b>
+                    Out-of-bounds read modelling in the static pass, and the
+                    calibration of the frontier join's rank axis. Both have
+                    working substitutes if they slip, which is what makes
+                    starting safe rather than reckless.
+                </p>
+            </div>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">01</span>
+                    <h2>Readiness, component by component</h2>
+                </div>
+                <div class="body-col">
+                    <p>
+                        The distinction that matters: an algorithm measured on a
+                        corpus is done, an algorithm that only runs from a
+                        developer's shell is not. Every red row below is the
+                        second kind.
+                    </p>
+                </div>
+                <div class="tablewrap">
+                    <table class="nw">
+                        <thead>
+                            <tr>
+                                <th>Piece</th>
+                                <th>State</th>
+                                <th>Evidence, or what is missing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Write evidence and ranking</td>
+                                <td><span class="pill ok">measured</span></td>
+                                <td>
+                                    66 traced vulnerable/fixed databases across
+                                    12 projects. Every labelled CVE write
+                                    appears in the analyst order; 7 of 22 in the
+                                    top 1%, 11 in the top 5%, 20 in the top 25%.
+                                    Zero false reports in any vulnerable
+                                    checkout.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Lifetime evidence (use after free)</td>
+                                <td><span class="pill ok">measured</span></td>
+                                <td>
+                                    Same corpus, same route. Cost problem on
+                                    large trees already fixed.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Reachability as a ranking input</td>
+                                <td><span class="pill ok">measured</span></td>
+                                <td>
+                                    Operand-level taint plus entry-point reach,
+                                    folded into the triage score. This is what
+                                    moved recall from 5/7/12 to 7/11/20.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Static pass as a shippable package</td>
+                                <td><span class="pill no">not built</span></td>
+                                <td>
+                                    No offline wheel, no vendored query pack, no
+                                    SARIF that passes the framework validator,
+                                    no pin against the runner's bundled engine.
+                                    Nine upstream items.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Out-of-bounds read modelling</td>
+                                <td>
+                                    <span class="pill no">not started</span>
+                                </td>
+                                <td>
+                                    The sanitizer traps reads and they score.
+                                    The arithmetic exists for writes; this
+                                    reuses it. Substitute if it slips: the stock
+                                    query suite covers part of this class.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Fuzzing loop and crash triage</td>
+                                <td>
+                                    <span class="pill part"
+                                        >works, wrong shape</span
+                                    >
+                                </td>
+                                <td>
+                                    Runs today as a plugin against a host. Needs
+                                    the core carve-out plus three rules moved
+                                    out of the prompts. Twelve upstream items.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>The frontier join</td>
+                                <td><span class="pill part">designed</span></td>
+                                <td>
+                                    Both inputs exist. The join itself is a day
+                                    of work; the calibration of what counts as
+                                    high rank is the uncertain part. Substitute
+                                    if it slips: dispatch on coverage alone,
+                                    which is the template's behaviour.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Second engine</td>
+                                <td>
+                                    <span class="pill part">scaffolded</span>
+                                </td>
+                                <td>
+                                    The template ships
+                                    <code>builder/build_afl</code> deliberately
+                                    blank, and the toolchain is already in the
+                                    base builder image.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Template baseline</td>
+                                <td><span class="pill no">unmeasured</span></td>
+                                <td>
+                                    Day one control. Until it exists no later
+                                    number means anything.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Dataset access</td>
+                                <td><span class="pill no">gated</span></td>
+                                <td>
+                                    Request it today. Nothing above can be
+                                    measured on real targets without it.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout">
+                    <b>The honest read.</b> The finder's intelligence is ready
+                    and its plumbing is not. That is the better half to be
+                    missing with nine days left, because plumbing fails loudly
+                    and early, while a ranking that does not work fails quietly
+                    on competition day.
+                </div>
+            </section>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">02</span>
+                    <h2>The finder, as a program</h2>
+                </div>
+                <div class="body-col">
+                    <p>
+                        Five build phases produce five artifacts from one source
+                        tree. The run phase then starts two independent lanes at
+                        second zero, merges three static producers into one
+                        ledger, and turns a graph loop that spends model budget
+                        only where the join says it is worth spending. Nothing
+                        reaches the submission directory that has not first
+                        crashed the evaluator's own build.
+                    </p>
+                </div>
+
+                <div class="legend">
+                    <span
+                        ><i
+                            style="
+                                border-color: var(--framework);
+                                background: var(--framework);
+                            "
+                        ></i
+                        >from the template</span
+                    >
+                    <span
+                        ><i
+                            style="
+                                border-color: var(--cull);
+                                background: var(--cull);
+                            "
+                        ></i
+                        >static evidence</span
+                    >
+                    <span
+                        ><i
+                            style="
+                                border-color: var(--ccf);
+                                background: var(--ccf);
+                            "
+                        ></i
+                        >fuzzing core</span
+                    >
+                    <span
+                        ><i
+                            style="
+                                border-color: var(--build);
+                                background: var(--build);
+                            "
+                        ></i
+                        >new in Parallax</span
+                    >
+                </div>
+
+                <figure>
+                    <div class="figbox">
+                        <svg
+                            viewBox="0 0 900 636"
+                            role="img"
+                            aria-label="The finder container. Five build phases produce an address-sanitizer libFuzzer binary, an AFL binary with comparison logging, a coverage build, a debug build and a CodeQL database. The run phase boots two lanes at once: the engines start on the shared corpus while three static producers merge into one ranked ledger. A LangGraph loop then measures coverage, joins rank against coverage, and dispatches one subagent per candidate. Every crash passes a filter, a replay and the run-pov oracle on the stock build before a write to the proof directory is allowed."
+                            style="
+                                font-family:
+                                    &quot;Source Sans 3&quot;, sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="fa"
+                                    viewBox="0 0 10 10"
+                                    refX="9"
+                                    refY="5"
+                                    markerWidth="7"
+                                    markerHeight="7"
+                                    orient="auto-start-reverse"
+                                >
+                                    <path
+                                        d="M 0 0 L 10 5 L 0 10 z"
+                                        fill="currentColor"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <text
+                                x="10"
+                                y="18"
+                                font-size="10.5"
+                                style="fill: var(--muted)"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                TARGET BUILD PHASES &middot; ONE SOURCE TREE, NO
+                                NETWORK
+                            </text>
+
+                            <rect
+                                x="10"
+                                y="28"
+                                width="164"
+                                height="62"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="22"
+                                y="47"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                build
+                            </text>
+                            <text
+                                x="22"
+                                y="64"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                libFuzzer + ASan
+                            </text>
+                            <text
+                                x="22"
+                                y="80"
+                                font-size="10"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                the evaluated binary
+                            </text>
+
+                            <rect
+                                x="188"
+                                y="28"
+                                width="164"
+                                height="62"
+                                rx="3"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.12"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="200"
+                                y="47"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                afl-build
+                            </text>
+                            <text
+                                x="200"
+                                y="64"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                AFL++ + cmplog
+                            </text>
+                            <text
+                                x="200"
+                                y="80"
+                                font-size="10"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                ships blank; we fill it
+                            </text>
+
+                            <rect
+                                x="366"
+                                y="28"
+                                width="164"
+                                height="62"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="378"
+                                y="47"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                coverage-build
+                            </text>
+                            <text
+                                x="378"
+                                y="64"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                counters
+                            </text>
+                            <text
+                                x="378"
+                                y="80"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.62"
+                            >
+                                half the join
+                            </text>
+
+                            <rect
+                                x="544"
+                                y="28"
+                                width="164"
+                                height="62"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="556"
+                                y="47"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                debug-build
+                            </text>
+                            <text
+                                x="556"
+                                y="64"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                -O0 -g3
+                            </text>
+                            <text
+                                x="556"
+                                y="80"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.62"
+                            >
+                                gdb reads live sizes
+                            </text>
+
+                            <rect
+                                x="722"
+                                y="28"
+                                width="168"
+                                height="62"
+                                rx="3"
+                                style="fill: var(--cull); stroke: var(--cull)"
+                                fill-opacity="0.12"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="734"
+                                y="47"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                codeql-build
+                            </text>
+                            <text
+                                x="734"
+                                y="64"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                traced database
+                            </text>
+                            <text
+                                x="734"
+                                y="80"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.62"
+                            >
+                                every static consumer
+                            </text>
+
+                            <line
+                                x1="92"
+                                y1="92"
+                                x2="92"
+                                y2="116"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+                            <line
+                                x1="270"
+                                y1="92"
+                                x2="270"
+                                y2="116"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+                            <line
+                                x1="806"
+                                y1="92"
+                                x2="806"
+                                y2="116"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="10"
+                                y="122"
+                                width="880"
+                                height="126"
+                                rx="4"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.3"
+                            />
+                            <text
+                                x="22"
+                                y="142"
+                                font-size="11.5"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                finder.py boot()
+                            </text>
+                            <text
+                                x="152"
+                                y="142"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                fetch seeds and ref.diff, install skills,
+                                register the submit dirs
+                            </text>
+                            <text
+                                x="736"
+                                y="142"
+                                font-size="10.5"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                both lanes at t=0
+                            </text>
+
+                            <rect
+                                x="22"
+                                y="152"
+                                width="200"
+                                height="40"
+                                rx="3"
+                                style="fill: var(--ccf); stroke: var(--ccf)"
+                                fill-opacity="0.11"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="34"
+                                y="169"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                engine lane
+                            </text>
+                            <text
+                                x="34"
+                                y="184"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.75"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                crs-fuzz + crs-afl start
+                            </text>
+                            <line
+                                x1="226"
+                                y1="172"
+                                x2="256"
+                                y2="172"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+                            <rect
+                                x="260"
+                                y="152"
+                                width="164"
+                                height="40"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="272"
+                                y="169"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                shared corpus
+                            </text>
+                            <text
+                                x="272"
+                                y="184"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                14 of 16 cores
+                            </text>
+
+                            <rect
+                                x="22"
+                                y="200"
+                                width="200"
+                                height="38"
+                                rx="3"
+                                style="fill: var(--cull); stroke: var(--cull)"
+                                fill-opacity="0.11"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="34"
+                                y="216"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                static lane
+                            </text>
+                            <text
+                                x="34"
+                                y="231"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.75"
+                            >
+                                evidence + stock suite + prescan
+                            </text>
+                            <line
+                                x1="226"
+                                y1="219"
+                                x2="256"
+                                y2="219"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+                            <rect
+                                x="260"
+                                y="200"
+                                width="164"
+                                height="38"
+                                rx="3"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.13"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="272"
+                                y="216"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                merged ledger
+                            </text>
+                            <text
+                                x="272"
+                                y="231"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.75"
+                            >
+                                ranked, source-tagged
+                            </text>
+
+                            <text
+                                x="444"
+                                y="169"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                Engines never wait on analysis, and analysis
+                                never waits on engines.
+                            </text>
+                            <text
+                                x="444"
+                                y="186"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                Both static producers are deterministic and cost
+                                no model budget,
+                            </text>
+                            <text
+                                x="444"
+                                y="203"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                so the ledger is open before the first dollar is
+                                spent. A cap keeps
+                            </text>
+                            <text
+                                x="444"
+                                y="220"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                whatever landed; nothing is ever dropped, only
+                                ranked lower.
+                            </text>
+
+                            <line
+                                x1="342"
+                                y1="242"
+                                x2="342"
+                                y2="266"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="10"
+                                y="272"
+                                width="880"
+                                height="200"
+                                rx="4"
+                                style="stroke: var(--build)"
+                                fill="none"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="22"
+                                y="292"
+                                font-size="11.5"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                run phase &middot; in-process graph loop
+                            </text>
+                            <text
+                                x="262"
+                                y="292"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.7"
+                            >
+                                one tick: decide, dispatch, measure again. No
+                                scheduler, no wake-up.
+                            </text>
+
+                            <rect
+                                x="22"
+                                y="304"
+                                width="132"
+                                height="44"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="34"
+                                y="322"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                measure
+                            </text>
+                            <text
+                                x="34"
+                                y="337"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                crs-coverage
+                            </text>
+                            <line
+                                x1="158"
+                                y1="326"
+                                x2="186"
+                                y2="326"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="190"
+                                y="304"
+                                width="132"
+                                height="44"
+                                rx="3"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.14"
+                                stroke-width="1.8"
+                            />
+                            <text
+                                x="202"
+                                y="322"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                join
+                            </text>
+                            <text
+                                x="202"
+                                y="337"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.75"
+                            >
+                                rank &times; coverage
+                            </text>
+                            <line
+                                x1="326"
+                                y1="326"
+                                x2="354"
+                                y2="326"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="358"
+                                y="304"
+                                width="132"
+                                height="44"
+                                rx="3"
+                                style="fill: var(--ccf); stroke: var(--ccf)"
+                                fill-opacity="0.11"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="370"
+                                y="322"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                dispatch
+                            </text>
+                            <text
+                                x="370"
+                                y="337"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                one action per candidate
+                            </text>
+
+                            <path
+                                d="M 424 352 V 372 H 88 V 352"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                stroke-dasharray="5 3"
+                                marker-end="url(#fa)"
+                            />
+                            <text
+                                x="256"
+                                y="368"
+                                font-size="10"
+                                text-anchor="middle"
+                                fill="currentColor"
+                                opacity="0.7"
+                            >
+                                until the wall clock or the cap says stop
+                            </text>
+
+                            <rect
+                                x="516"
+                                y="298"
+                                width="170"
+                                height="26"
+                                rx="2"
+                                style="fill: var(--ccf); stroke: var(--ccf)"
+                                fill-opacity="0.11"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="526"
+                                y="316"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                seed-gen &middot; uncovered
+                            </text>
+                            <rect
+                                x="516"
+                                y="328"
+                                width="170"
+                                height="26"
+                                rx="2"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.13"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="526"
+                                y="346"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                pov-gen &middot; covered, gdb
+                            </text>
+                            <rect
+                                x="516"
+                                y="358"
+                                width="170"
+                                height="26"
+                                rx="2"
+                                style="fill: var(--cull); stroke: var(--cull)"
+                                fill-opacity="0.13"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="526"
+                                y="376"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                query-writer &middot; own budget
+                            </text>
+                            <path
+                                d="M 494 326 L 512 311"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                marker-end="url(#fa)"
+                            />
+                            <path
+                                d="M 494 328 L 512 341"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                marker-end="url(#fa)"
+                            />
+                            <path
+                                d="M 494 330 L 512 371"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                marker-end="url(#fa)"
+                            />
+
+                            <text
+                                x="700"
+                                y="312"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                Each is one
+                            </text>
+                            <text
+                                x="700"
+                                y="328"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                claude -p
+                            </text>
+                            <text
+                                x="700"
+                                y="344"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                call. Its cost and
+                            </text>
+                            <text
+                                x="700"
+                                y="360"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                outcome append to
+                            </text>
+                            <text
+                                x="700"
+                                y="376"
+                                font-size="10.5"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                the ledger, by hook.
+                            </text>
+
+                            <rect
+                                x="22"
+                                y="392"
+                                width="664"
+                                height="64"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                stroke-dasharray="4 3"
+                            />
+                            <text
+                                x="34"
+                                y="410"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.7"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                the quadrant that earns the call
+                            </text>
+                            <text
+                                x="34"
+                                y="430"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                High rank and uncovered is the frontier: a
+                                likely bug nothing has reached yet.
+                            </text>
+                            <text
+                                x="34"
+                                y="447"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                High rank and covered means the code runs and
+                                has not crashed, so craft the value.
+                            </text>
+                            <text
+                                x="700"
+                                y="430"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                Low rank is parked,
+                            </text>
+                            <text
+                                x="700"
+                                y="446"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                never discarded.
+                            </text>
+
+                            <line
+                                x1="450"
+                                y1="476"
+                                x2="450"
+                                y2="500"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#fa)"
+                            />
+
+                            <text
+                                x="10"
+                                y="518"
+                                font-size="10.5"
+                                style="fill: var(--muted)"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                VERIFY &middot; THE ONLY PATH TO A POINT
+                            </text>
+
+                            <rect
+                                x="10"
+                                y="528"
+                                width="128"
+                                height="44"
+                                rx="3"
+                                style="fill: var(--ccf); stroke: var(--ccf)"
+                                fill-opacity="0.11"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="22"
+                                y="546"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                crash file
+                            </text>
+                            <text
+                                x="22"
+                                y="561"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                minimised
+                            </text>
+                            <line
+                                x1="142"
+                                y1="550"
+                                x2="166"
+                                y2="550"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="170"
+                                y="528"
+                                width="150"
+                                height="44"
+                                rx="3"
+                                style="fill: var(--ccf); stroke: var(--ccf)"
+                                fill-opacity="0.11"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="182"
+                                y="546"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                filter and replay
+                            </text>
+                            <text
+                                x="182"
+                                y="561"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                drop harness artifacts
+                            </text>
+                            <line
+                                x1="324"
+                                y1="550"
+                                x2="348"
+                                y2="550"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="352"
+                                y="528"
+                                width="150"
+                                height="44"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="364"
+                                y="546"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                run-pov
+                            </text>
+                            <text
+                                x="364"
+                                y="561"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                stock ASan build only
+                            </text>
+                            <line
+                                x1="506"
+                                y1="550"
+                                x2="530"
+                                y2="550"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="534"
+                                y="524"
+                                width="160"
+                                height="52"
+                                rx="3"
+                                style="fill: var(--warn); stroke: var(--warn)"
+                                fill-opacity="0.1"
+                                stroke-width="1.8"
+                            />
+                            <text
+                                x="546"
+                                y="542"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                write gate
+                            </text>
+                            <text
+                                x="546"
+                                y="557"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                no marker, no write
+                            </text>
+                            <text
+                                x="546"
+                                y="571"
+                                font-size="10"
+                                style="fill: var(--warn)"
+                                font-weight="600"
+                            >
+                                refused, not warned
+                            </text>
+                            <line
+                                x1="698"
+                                y1="550"
+                                x2="722"
+                                y2="550"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#fa)"
+                            />
+
+                            <rect
+                                x="726"
+                                y="528"
+                                width="164"
+                                height="44"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="738"
+                                y="546"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                /artifacts/povs
+                            </text>
+                            <text
+                                x="738"
+                                y="561"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                libCRS submits
+                            </text>
+
+                            <text
+                                x="10"
+                                y="598"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                One input per sanitizer class and stack hash. A
+                                second input for a root cause already submitted
+                                scores nothing
+                            </text>
+                            <text
+                                x="10"
+                                y="614"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                and spends the accuracy multiplier that every
+                                other submission depends on.
+                            </text>
+                        </svg>
+                    </div>
+                    <figcaption>
+                        <b>The finder is two lanes, one join and one gate.</b>
+                        The lanes exist so sixteen cores are never idle waiting
+                        for analysis. The join exists so model budget goes where
+                        a bug is both likely and unreached. The gate exists
+                        because a candidate that has not crashed the evaluator's
+                        own build is worth less than nothing: it costs the
+                        accuracy multiplier on everything else.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">03</span>
+                    <h2>The patcher, as a program</h2>
+                </div>
+                <div class="body-col">
+                    <p>
+                        The patcher is a much smaller program with one brutal
+                        constraint that shapes everything else:
+                        <b
+                            >the first diff written to the patches directory is
+                            submitted, and submission is final</b
+                        >. The template's launcher runs a watcher thread that
+                        latches the first file it sees and exits. There is no
+                        second attempt, no ranking of candidate patches, no
+                        taking the best of three.
+                    </p>
+                    <p>
+                        So the patcher's real design problem is not how to write
+                        a fix. It is how to stop a confident model from writing
+                        one before it is verified.
+                    </p>
+                </div>
+
+                <figure>
+                    <div class="figbox">
+                        <svg
+                            viewBox="0 0 900 520"
+                            role="img"
+                            aria-label="The patcher container. Proofs of vulnerability, bug candidates carrying the evidence record, the reference diff and seeds are fetched from the framework exchange and joined per proof into the agent's prompt. The agent analyses, edits and then verifies through three sidecar calls: a rebuild, a replay of every proof, and the project test script. Only when all three pass is the write to the patches directory allowed. A watcher submits the first diff it sees and the run ends."
+                            style="
+                                font-family:
+                                    &quot;Source Sans 3&quot;, sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="pa"
+                                    viewBox="0 0 10 10"
+                                    refX="9"
+                                    refY="5"
+                                    markerWidth="7"
+                                    markerHeight="7"
+                                    orient="auto-start-reverse"
+                                >
+                                    <path
+                                        d="M 0 0 L 10 5 L 0 10 z"
+                                        fill="currentColor"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <text
+                                x="10"
+                                y="18"
+                                font-size="10.5"
+                                style="fill: var(--muted)"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                FETCHED FROM THE FRAMEWORK EXCHANGE
+                            </text>
+
+                            <rect
+                                x="10"
+                                y="28"
+                                width="150"
+                                height="52"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="22"
+                                y="46"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                POV
+                            </text>
+                            <text
+                                x="22"
+                                y="62"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.78"
+                            >
+                                verified inputs
+                            </text>
+                            <text
+                                x="22"
+                                y="76"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.6"
+                            >
+                                from our finder
+                            </text>
+
+                            <rect
+                                x="168"
+                                y="28"
+                                width="178"
+                                height="52"
+                                rx="3"
+                                style="fill: var(--cull); stroke: var(--cull)"
+                                fill-opacity="0.13"
+                                stroke-width="1.8"
+                            />
+                            <text
+                                x="180"
+                                y="46"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                BUG_CANDIDATE
+                            </text>
+                            <text
+                                x="180"
+                                y="62"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.78"
+                            >
+                                the evidence record
+                            </text>
+                            <text
+                                x="180"
+                                y="76"
+                                font-size="10"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                this is our edge
+                            </text>
+
+                            <rect
+                                x="354"
+                                y="28"
+                                width="132"
+                                height="52"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="366"
+                                y="46"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                DIFF
+                            </text>
+                            <text
+                                x="366"
+                                y="62"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.78"
+                            >
+                                delta mode only
+                            </text>
+
+                            <rect
+                                x="494"
+                                y="28"
+                                width="132"
+                                height="52"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="506"
+                                y="46"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                SEED
+                            </text>
+                            <text
+                                x="506"
+                                y="62"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.78"
+                            >
+                                reachability hints
+                            </text>
+
+                            <text
+                                x="646"
+                                y="46"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                The patcher container builds only
+                            </text>
+                            <text
+                                x="646"
+                                y="62"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                the default target. It has no analysis
+                            </text>
+                            <text
+                                x="646"
+                                y="78"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                database, so the evidence must arrive
+                            </text>
+                            <text
+                                x="646"
+                                y="94"
+                                font-size="10.5"
+                                style="fill: var(--cull)"
+                                font-weight="600"
+                            >
+                                as a fetched artifact, not be recomputed.
+                            </text>
+
+                            <line
+                                x1="258"
+                                y1="84"
+                                x2="258"
+                                y2="108"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#pa)"
+                            />
+
+                            <rect
+                                x="10"
+                                y="114"
+                                width="616"
+                                height="72"
+                                rx="4"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.3"
+                            />
+                            <text
+                                x="22"
+                                y="134"
+                                font-size="11.5"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                patcher.py
+                            </text>
+                            <text
+                                x="116"
+                                y="134"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                git reset --hard, then assemble one prompt per
+                                proof
+                            </text>
+                            <text
+                                x="22"
+                                y="156"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.88"
+                            >
+                                Join each proof to the evidence for its site:
+                                the capacity, the extent, the offset, the
+                            </text>
+                            <text
+                                x="22"
+                                y="173"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.88"
+                            >
+                                guards already present and the operand an
+                                attacker decides.
+                            </text>
+
+                            <text
+                                x="646"
+                                y="138"
+                                font-size="10.5"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                Why the join matters here
+                            </text>
+                            <text
+                                x="646"
+                                y="156"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                A stack trace says where it broke.
+                            </text>
+                            <text
+                                x="646"
+                                y="172"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                The record says which bound was
+                            </text>
+                            <text
+                                x="646"
+                                y="188"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                exceeded and by what. One of those
+                            </text>
+                            <text
+                                x="646"
+                                y="204"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                tells you where to put the check.
+                            </text>
+
+                            <line
+                                x1="318"
+                                y1="190"
+                                x2="318"
+                                y2="214"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#pa)"
+                            />
+
+                            <rect
+                                x="10"
+                                y="220"
+                                width="616"
+                                height="180"
+                                rx="4"
+                                style="stroke: var(--build)"
+                                fill="none"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="22"
+                                y="240"
+                                font-size="11.5"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                claude -p &middot; analyse, edit, verify
+                            </text>
+
+                            <rect
+                                x="22"
+                                y="252"
+                                width="122"
+                                height="44"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="34"
+                                y="270"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                analyse
+                            </text>
+                            <text
+                                x="34"
+                                y="285"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                proof + record
+                            </text>
+                            <line
+                                x1="148"
+                                y1="274"
+                                x2="172"
+                                y2="274"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#pa)"
+                            />
+
+                            <rect
+                                x="176"
+                                y="252"
+                                width="122"
+                                height="44"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="188"
+                                y="270"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                edit source
+                            </text>
+                            <text
+                                x="188"
+                                y="285"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                narrowest fix
+                            </text>
+                            <line
+                                x1="302"
+                                y1="274"
+                                x2="326"
+                                y2="274"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#pa)"
+                            />
+
+                            <rect
+                                x="330"
+                                y="246"
+                                width="284"
+                                height="140"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="342"
+                                y="264"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                verify &middot; three sidecar calls
+                            </text>
+                            <rect
+                                x="342"
+                                y="274"
+                                width="260"
+                                height="24"
+                                rx="2"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.09"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="352"
+                                y="290"
+                                font-size="10.5"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                apply-patch-build &rarr; compiles
+                            </text>
+                            <rect
+                                x="342"
+                                y="302"
+                                width="260"
+                                height="24"
+                                rx="2"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.09"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="352"
+                                y="318"
+                                font-size="10.5"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                run-pov &times; every proof &rarr; all clean
+                            </text>
+                            <rect
+                                x="342"
+                                y="330"
+                                width="260"
+                                height="24"
+                                rx="2"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.09"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="352"
+                                y="346"
+                                font-size="10.5"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                apply-patch-test &rarr; test.sh passes
+                            </text>
+                            <text
+                                x="342"
+                                y="374"
+                                font-size="10.5"
+                                style="fill: var(--warn)"
+                                font-weight="600"
+                            >
+                                any failure &rarr; back to edit, no write
+                            </text>
+
+                            <path
+                                d="M 472 388 V 396 H 237 V 300"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                stroke-dasharray="5 3"
+                                marker-end="url(#pa)"
+                            />
+
+                            <line
+                                x1="630"
+                                y1="310"
+                                x2="666"
+                                y2="310"
+                                stroke="currentColor"
+                                stroke-width="1.4"
+                                marker-end="url(#pa)"
+                            />
+                            <text
+                                x="648"
+                                y="302"
+                                font-size="10"
+                                text-anchor="middle"
+                                fill="currentColor"
+                                opacity="0.75"
+                            >
+                                3 of 3
+                            </text>
+
+                            <rect
+                                x="670"
+                                y="270"
+                                width="220"
+                                height="80"
+                                rx="3"
+                                style="fill: var(--warn); stroke: var(--warn)"
+                                fill-opacity="0.1"
+                                stroke-width="1.8"
+                            />
+                            <text
+                                x="682"
+                                y="292"
+                                font-size="11.5"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                the one-shot gate
+                            </text>
+                            <text
+                                x="682"
+                                y="310"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                a write to /patches/ is refused
+                            </text>
+                            <text
+                                x="682"
+                                y="326"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                until all three checks have passed
+                            </text>
+                            <text
+                                x="682"
+                                y="343"
+                                font-size="10"
+                                style="fill: var(--warn)"
+                                font-weight="600"
+                            >
+                                the model cannot express the mistake
+                            </text>
+
+                            <line
+                                x1="780"
+                                y1="354"
+                                x2="780"
+                                y2="378"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#pa)"
+                            />
+
+                            <rect
+                                x="670"
+                                y="384"
+                                width="220"
+                                height="56"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.4"
+                            />
+                            <text
+                                x="682"
+                                y="404"
+                                font-size="11"
+                                font-weight="600"
+                                fill="currentColor"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                watcher thread
+                            </text>
+                            <text
+                                x="682"
+                                y="420"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                latches the first .diff it sees
+                            </text>
+                            <text
+                                x="682"
+                                y="434"
+                                font-size="10.5"
+                                style="fill: var(--warn)"
+                                font-weight="600"
+                            >
+                                submits it, and the run ends
+                            </text>
+
+                            <text
+                                x="10"
+                                y="428"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                A patch scores three times a find, so the
+                                cheapest points on the board are
+                            </text>
+                            <text
+                                x="10"
+                                y="446"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.85"
+                            >
+                                the ones already found. That is the whole
+                                argument for spending late.
+                            </text>
+
+                            <text
+                                x="10"
+                                y="480"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                The template ships this launcher, the sidecars
+                                and the watcher. What we add is the evidence on
+                                the way in and the gate
+                            </text>
+                            <text
+                                x="10"
+                                y="496"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                on the way out. Neither is a rewrite; both are
+                                the difference between one good patch and one
+                                premature one.
+                            </text>
+                        </svg>
+                    </div>
+                    <figcaption>
+                        <b>One shot, so the gate is the architecture.</b> The
+                        template already supplies the fetch, the three sidecar
+                        calls and the watcher that submits. Parallax changes
+                        exactly two things: the prompt carries the static
+                        evidence record for the crash site, and a write to the
+                        patches directory is refused until the rebuild, the
+                        replay of every proof and the project test script have
+                        all passed.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">04</span>
+                    <h2>What actually changes, in one picture each</h2>
+                </div>
+                <div class="body-col">
+                    <p>
+                        Both containers are forks, so the useful comparison is
+                        not the whole architecture. It is the single edge each
+                        fork adds.
+                    </p>
+                </div>
+
+                <figure>
+                    <div class="figbox">
+                        <svg
+                            viewBox="0 0 900 400"
+                            role="img"
+                            aria-label="Two before-and-after comparisons. In the finder, the template routes each candidate on coverage alone, a one-dimensional split into covered and uncovered; Parallax adds a rank axis so routing happens over four quadrants and only the two high-rank ones earn a model call. In the patcher, the template lets the agent write a diff at any time and the watcher submits the first one; Parallax inserts a gate so the write is refused until all three verification calls have passed."
+                            style="
+                                font-family:
+                                    &quot;Source Sans 3&quot;, sans-serif;
+                            "
+                        >
+                            <defs>
+                                <marker
+                                    id="ca"
+                                    viewBox="0 0 10 10"
+                                    refX="9"
+                                    refY="5"
+                                    markerWidth="7"
+                                    markerHeight="7"
+                                    orient="auto-start-reverse"
+                                >
+                                    <path
+                                        d="M 0 0 L 10 5 L 0 10 z"
+                                        fill="currentColor"
+                                    />
+                                </marker>
+                            </defs>
+
+                            <text
+                                x="10"
+                                y="18"
+                                font-size="10.5"
+                                style="fill: var(--muted)"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                FINDER &middot; THE ROUTING EDGE
+                            </text>
+
+                            <text
+                                x="10"
+                                y="42"
+                                font-size="11"
+                                fill="currentColor"
+                                opacity="0.7"
+                            >
+                                template
+                            </text>
+                            <rect
+                                x="10"
+                                y="52"
+                                width="104"
+                                height="34"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="22"
+                                y="74"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                candidate
+                            </text>
+                            <line
+                                x1="118"
+                                y1="69"
+                                x2="146"
+                                y2="69"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#ca)"
+                            />
+                            <rect
+                                x="150"
+                                y="52"
+                                width="104"
+                                height="34"
+                                rx="3"
+                                style="
+                                    fill: var(--framework);
+                                    stroke: var(--framework);
+                                "
+                                fill-opacity="0.1"
+                                stroke-width="1.3"
+                            />
+                            <text
+                                x="162"
+                                y="74"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                covered?
+                            </text>
+                            <path
+                                d="M 258 62 L 292 44"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#ca)"
+                            />
+                            <path
+                                d="M 258 76 L 292 94"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.1"
+                                marker-end="url(#ca)"
+                            />
+                            <rect
+                                x="296"
+                                y="24"
+                                width="120"
+                                height="30"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="306"
+                                y="44"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                pov-gen
+                            </text>
+                            <rect
+                                x="296"
+                                y="82"
+                                width="120"
+                                height="30"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                            />
+                            <text
+                                x="306"
+                                y="102"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                seed-gen
+                            </text>
+                            <text
+                                x="428"
+                                y="60"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                Every candidate gets a model call.
+                            </text>
+                            <text
+                                x="428"
+                                y="76"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                A cold branch that cannot break a
+                            </text>
+                            <text
+                                x="428"
+                                y="92"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                bound costs the same as one that can.
+                            </text>
+
+                            <line
+                                x1="10"
+                                y1="128"
+                                x2="890"
+                                y2="128"
+                                stroke="currentColor"
+                                stroke-width="0.8"
+                                opacity="0.18"
+                            />
+
+                            <text
+                                x="10"
+                                y="150"
+                                font-size="11"
+                                style="fill: var(--build)"
+                                font-weight="600"
+                            >
+                                parallax
+                            </text>
+                            <text
+                                x="98"
+                                y="150"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.7"
+                            >
+                                the same split, with a second axis the ledger
+                                supplies
+                            </text>
+
+                            <text
+                                x="82"
+                                y="240"
+                                font-size="10.5"
+                                font-weight="600"
+                                fill="currentColor"
+                                opacity="0.8"
+                                transform="rotate(-90 82 240)"
+                                text-anchor="middle"
+                            >
+                                rank
+                            </text>
+                            <text
+                                x="104"
+                                y="196"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.7"
+                                text-anchor="end"
+                            >
+                                high
+                            </text>
+                            <text
+                                x="104"
+                                y="268"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.7"
+                                text-anchor="end"
+                            >
+                                low
+                            </text>
+                            <text
+                                x="172"
+                                y="176"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.7"
+                                text-anchor="middle"
+                            >
+                                uncovered
+                            </text>
+                            <text
+                                x="292"
+                                y="176"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.7"
+                                text-anchor="middle"
+                            >
+                                covered
+                            </text>
+
+                            <rect
+                                x="112"
+                                y="182"
+                                width="120"
+                                height="58"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.14"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="122"
+                                y="204"
+                                font-size="10.5"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                the frontier
+                            </text>
+                            <text
+                                x="122"
+                                y="222"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                seed-gen, then solve
+                            </text>
+
+                            <rect
+                                x="232"
+                                y="182"
+                                width="120"
+                                height="58"
+                                style="fill: var(--cull); stroke: var(--cull)"
+                                fill-opacity="0.13"
+                                stroke-width="1.6"
+                            />
+                            <text
+                                x="242"
+                                y="204"
+                                font-size="10.5"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                targeted PoV
+                            </text>
+                            <text
+                                x="242"
+                                y="222"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                the operand is named
+                            </text>
+
+                            <rect
+                                x="112"
+                                y="240"
+                                width="120"
+                                height="58"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                opacity="0.42"
+                            />
+                            <text
+                                x="122"
+                                y="262"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                park it
+                            </text>
+                            <text
+                                x="122"
+                                y="280"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.6"
+                            >
+                                kept, not binned
+                            </text>
+
+                            <rect
+                                x="232"
+                                y="240"
+                                width="120"
+                                height="58"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1"
+                                opacity="0.42"
+                            />
+                            <text
+                                x="242"
+                                y="262"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.72"
+                            >
+                                leave the fuzzer
+                            </text>
+                            <text
+                                x="242"
+                                y="280"
+                                font-size="10"
+                                fill="currentColor"
+                                opacity="0.6"
+                            >
+                                already mutating
+                            </text>
+
+                            <text
+                                x="372"
+                                y="204"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                Only the top row earns a model call, so the
+                            </text>
+                            <text
+                                x="372"
+                                y="220"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                same fifty dollars buys attention where a
+                            </text>
+                            <text
+                                x="372"
+                                y="236"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                bound can actually break. The bottom row is
+                            </text>
+                            <text
+                                x="372"
+                                y="252"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                a parking bay, because the reachability walk
+                            </text>
+                            <text
+                                x="372"
+                                y="268"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                under-approximates and a filter built on an
+                            </text>
+                            <text
+                                x="372"
+                                y="284"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                under-approximation loses real bugs silently.
+                            </text>
+
+                            <line
+                                x1="10"
+                                y1="316"
+                                x2="890"
+                                y2="316"
+                                stroke="currentColor"
+                                stroke-width="0.8"
+                                opacity="0.18"
+                            />
+                            <text
+                                x="10"
+                                y="338"
+                                font-size="10.5"
+                                style="fill: var(--muted)"
+                                font-family="'IBM Plex Mono',monospace"
+                            >
+                                PATCHER &middot; THE WRITE EDGE
+                            </text>
+
+                            <rect
+                                x="10"
+                                y="350"
+                                width="112"
+                                height="32"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="22"
+                                y="371"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                agent edits
+                            </text>
+                            <line
+                                x1="126"
+                                y1="366"
+                                x2="152"
+                                y2="366"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                stroke-dasharray="4 3"
+                                marker-end="url(#ca)"
+                            />
+                            <text
+                                x="139"
+                                y="358"
+                                font-size="9.5"
+                                text-anchor="middle"
+                                fill="currentColor"
+                                opacity="0.6"
+                            >
+                                template
+                            </text>
+                            <rect
+                                x="156"
+                                y="350"
+                                width="140"
+                                height="32"
+                                rx="3"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                            />
+                            <text
+                                x="168"
+                                y="371"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                /patches/*.diff
+                            </text>
+                            <line
+                                x1="300"
+                                y1="366"
+                                x2="326"
+                                y2="366"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#ca)"
+                            />
+                            <rect
+                                x="330"
+                                y="350"
+                                width="126"
+                                height="32"
+                                rx="3"
+                                style="fill: var(--warn); stroke: var(--warn)"
+                                fill-opacity="0.09"
+                                stroke-width="1.3"
+                            />
+                            <text
+                                x="342"
+                                y="371"
+                                font-size="10.5"
+                                fill="currentColor"
+                            >
+                                submitted, final
+                            </text>
+
+                            <path
+                                d="M 68 346 V 326 H 512 V 350"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.4"
+                                style="stroke: var(--build)"
+                                marker-end="url(#ca)"
+                            />
+                            <rect
+                                x="470"
+                                y="350"
+                                width="150"
+                                height="32"
+                                rx="3"
+                                style="fill: var(--build); stroke: var(--build)"
+                                fill-opacity="0.14"
+                                stroke-width="1.8"
+                            />
+                            <text
+                                x="482"
+                                y="371"
+                                font-size="10.5"
+                                font-weight="600"
+                                fill="currentColor"
+                            >
+                                verified? gate
+                            </text>
+                            <line
+                                x1="624"
+                                y1="366"
+                                x2="650"
+                                y2="366"
+                                stroke="currentColor"
+                                stroke-width="1.2"
+                                marker-end="url(#ca)"
+                            />
+                            <text
+                                x="654"
+                                y="362"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                the one new edge: the write
+                            </text>
+                            <text
+                                x="654"
+                                y="378"
+                                font-size="10.5"
+                                fill="currentColor"
+                                opacity="0.8"
+                            >
+                                is where the check belongs
+                            </text>
+                        </svg>
+                    </div>
+                    <figcaption>
+                        <b>Two forks, one new edge each.</b> The finder gains a
+                        rank axis that turns a binary route into four quadrants,
+                        which is how the same budget reaches the candidates that
+                        can actually break a bound. The patcher gains a gate
+                        between the agent and the patches directory, which is
+                        the only place a one-shot submission can be protected.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">05</span>
+                    <h2>Similar to, and different from</h2>
+                </div>
+                <div class="body-col">
+                    <p>
+                        Systems in this lineage converge on the same skeleton
+                        because the contract forces it: a sanitizer decides
+                        truth, an agent drives, and a fuzzer supplies the
+                        throughput no agent can match. The differences are
+                        narrower than the architecture diagrams suggest, and
+                        they are worth naming precisely.
+                    </p>
+                </div>
+                <div class="tablewrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dimension</th>
+                                <th>Template baseline</th>
+                                <th>Common in this lineage</th>
+                                <th>Parallax</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Control flow</td>
+                                <td>
+                                    A graph loop: measure, explore, dispatch,
+                                    repeat
+                                </td>
+                                <td>
+                                    An agent loop or a graph, both fed by a
+                                    state file
+                                </td>
+                                <td>
+                                    Same, unchanged. This is the part that
+                                    already works.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Truth</td>
+                                <td>The oracle on the stock build</td>
+                                <td>The oracle on the stock build</td>
+                                <td>
+                                    Identical, and enforced at the write rather
+                                    than stated in a prompt
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Engines</td>
+                                <td>
+                                    libFuzzer only; the second build script
+                                    ships blank
+                                </td>
+                                <td>Two or three engines on a shared corpus</td>
+                                <td>
+                                    Two engines, comparison logging feeding a
+                                    dictionary
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Static analysis</td>
+                                <td>A query tool the agent may call</td>
+                                <td>A query tool the agent may call</td>
+                                <td>
+                                    Three producers run at boot into one ranked,
+                                    source-tagged ledger before any model call
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Where the model spends</td>
+                                <td>Every candidate the explorer emits</td>
+                                <td>
+                                    Coverage gaps, ranked by the agent's own
+                                    judgement
+                                </td>
+                                <td>
+                                    The two high-rank quadrants of a join, with
+                                    everything else parked
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Static-to-dynamic link</td>
+                                <td>Advice in a prompt</td>
+                                <td>Locations handed over as candidates</td>
+                                <td>
+                                    A joined record: the operand, the bound and
+                                    the value that breaks it
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Finder to patcher</td>
+                                <td>The proof input alone</td>
+                                <td>
+                                    The proof input, sometimes a root-cause note
+                                </td>
+                                <td>
+                                    The proof plus the versioned evidence record
+                                    for that site
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Rule enforcement</td>
+                                <td>Prose in a system prompt</td>
+                                <td>Prose in a system prompt</td>
+                                <td>
+                                    Refusal at the API and again at the tool
+                                    call
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cols" style="margin-top: 24px">
+                    <div class="card">
+                        <h3>The genuine differentiator</h3>
+                        <p>
+                            <b>The join, and only the join.</b> Everyone runs a
+                            fuzzer and everyone can call a query tool. Almost
+                            nobody makes the static rank and the live coverage
+                            meet on the same line number and let the result
+                            decide where the money goes. That is the one
+                            component worth defending in the remaining days.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>The unglamorous differentiator</h3>
+                        <p>
+                            <b
+                                >Nothing unverified reaches a submission
+                                directory.</b
+                            >
+                            Scoring multiplies finds by an accuracy term and the
+                            patcher submits exactly once. Two gates, each a few
+                            lines, protect more points than any analysis
+                            improvement available in nine days.
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Where we are deliberately ordinary</h3>
+                        <p>
+                            <b
+                                >The loop, the oracle, the engines and the
+                                container.</b
+                            >
+                            All inherited, all unchanged. Every hour spent
+                            redesigning a part the template already got right is
+                            an hour not spent on the two above, and a divergence
+                            that has to be re-tested three times at the freeze.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="callout rule">
+                    <b>The risk this table hides.</b> A ledger becomes the
+                    agent's whole world: it works on what is in front of it and
+                    cannot see what is absent. Three defences are in the design
+                    and all three have to survive contact with the schedule.
+                    Keep the query-writing branch funded, report per-source
+                    counts so an empty taxonomy is visible, and name the
+                    unmodelled write classes in the prompt. Drop any one and the
+                    ledger quietly becomes a filter.
+                </div>
+            </section>
+
+            <section>
+                <div class="sec-head">
+                    <span class="num">06</span>
+                    <h2>What has to be true to start tomorrow</h2>
+                </div>
+                <div class="body-col">
+                    <p>Four things, in order. None is analysis work.</p>
+                </div>
+                <div class="tablewrap">
+                    <table class="nw">
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Owner</th>
+                                <th>Done when</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Request dataset access</td>
+                                <td>today</td>
+                                <td>
+                                    The gated targets are reachable. Everything
+                                    downstream is unmeasurable without them.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Fork the template, run the sanity target
+                                    untouched
+                                </td>
+                                <td>downstream</td>
+                                <td>
+                                    A recorded baseline in both modes: did the
+                                    stock agent solve either injected bug, and
+                                    at what cost.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Carve out the fuzzing core, move three rules
+                                    out of the prompts
+                                </td>
+                                <td>cc-fuzzer</td>
+                                <td>
+                                    The package installs and advances a recorded
+                                    state file with no plugin present; a forced
+                                    unverified promotion is refused; the ledger
+                                    accounts for every subagent call.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ship the candidate format</td>
+                                <td>cull</td>
+                                <td>
+                                    SARIF the framework validator accepts, flow
+                                    steps preserved, an offline wheel pinned to
+                                    the bundled engine, and the crash site
+                                    inside the top ten candidates on the sanity
+                                    target.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="callout">
+                    <b
+                        >Start the downstream repo before the upstream work
+                        lands.</b
+                    >
+                    The container wiring can be built against a stub that
+                    returns a fixed ledger, and the sooner the baseline exists
+                    the sooner every later number means something. Waiting for
+                    the upstream packages to be perfect is how nine days becomes
+                    four.
+                </div>
+            </section>
+        </div>
+    </body>
+</html>

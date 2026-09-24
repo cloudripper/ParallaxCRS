@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crs-finder-parallax"
+version = "1.0.0"
+description = "Bug-finding CRS for CRC@CSAW"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "gadgetcomplex" }]
+dependencies = [
+    "langgraph>=0.2",
+    "langchain>=0.3",
+    "langchain-core>=0.3",
+    "jinja2>=3.0",   # renders crs/CLAUDE.md.j2 in crs.src.prompts.build_claude_md
+]
+
+[project.scripts]
+crs-coverage = "crs.tools.coverage:main"
+crs-fuzz = "crs.tools.fuzzer:main"
+crs-codeql = "crs.tools.codeql:main"
+
+[tool.setuptools.packages.find]
+include = ["crs", "crs.*"]
+
+[tool.setuptools.package-data]
+# Ship the CLAUDE.md template (crs/CLAUDE.md.j2), the Claude Code skill files
+# (crs/skills/<name>/SKILL.md), subagent definitions (crs/agents/<name>.md) and the
+# entrypoint role prompts (crs/roles/<name>.md) as package data so build_claude_md()
+# / install_skills() / install_agents() / load_role() can find them in the installed
+# package (runner image).
+crs = ["CLAUDE.md.j2", "skills/*/SKILL.md", "agents/*.md", "roles/*.md"]

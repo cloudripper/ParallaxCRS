@@ -1,0 +1,46 @@
+##############################################################################
+#                        CRS Compose Configuration                           #
+#                     Example for crs-claude-code                            #
+##############################################################################
+
+# --- General Settings -------------------------------------------------------
+run_env: local
+docker_registry: local
+
+# --- Infrastructure ---------------------------------------------------------
+oss_crs_infra:
+  cpuset: "0-1"
+  memory: "8G"
+
+# --- CRS (crs-claude-code) ---------------------------------------------
+# Builder sidecar is injected by the framework automatically.
+crs-claude-code:
+  source:
+    local_path: /path/to/crs-claude-code            # UPDATE: local filesystem path
+  cpuset: "2-7"                                     # UPDATE: available CPU cores
+  memory: "16G"                                     # UPDATE: available memory
+  llm_budget: 10                                    # LLM budget in USD
+  additional_env:
+    # Override CRS defaults here. Optional prepare-phase CLI pin:
+    #   CLAUDE_CODE_CLI_VERSION: 2.1.42
+    # Available models:
+    #   claude-opus-4-6, claude-sonnet-4-6, claude-haiku-4-5-20251001,
+    #   claude-opus-4-5-20251101, claude-opus-4-1-20250805,
+    #   claude-sonnet-4-5-20250929, claude-sonnet-4-20250514
+    CRS_AGENT: claude_code
+    ANTHROPIC_MODEL: claude-opus-4-6
+    CLAUDE_CODE_OAUTH_TOKEN: "${CLAUDE_CODE_OAUTH_TOKEN}"  # Optional: set to use OAuth instead of OSS-CRS LLM proxy
+    # CLAUDE_CODE_SUBAGENT_MODEL: claude-sonnet-4-6
+    # ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-6
+    # ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6
+    # ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-5-20251001
+    # AGENT_TIMEOUT: "3600"                          # Optional: seconds, 0 = no limit (default)
+
+# --- Optional LLM Configuration --------------------------------------------
+# Uncomment if you want OSS-CRS to inject an external LiteLLM endpoint.
+# llm_config:
+#   litellm:
+#     mode: external
+#     external:
+#       url_env: EXTERNAL_LITELLM_API_BASE
+#       key_env: EXTERNAL_LITELLM_API_KEY

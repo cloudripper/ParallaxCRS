@@ -1,0 +1,29 @@
+run_env: local
+docker_registry: local
+
+oss_crs_infra:
+  cpuset: "0-15"
+  memory: "64G"
+
+# For Claude Code OAuth, comment out this block and use --auth-mode oauth.
+llm_config:
+  litellm:
+    mode: internal
+    model_check: false
+    internal:
+      config_path: configs/litellm-config.yaml
+
+crs-finder-claude-code:
+  source:
+    local_path: crs/crs-finder-parallax
+  cpuset: "0-15"
+  memory: "64G"
+  llm_budget: 50
+  additional_env:
+    ANTHROPIC_MODEL: claude-opus-4-8
+    CLAUDE_CODE_SUBAGENT_MODEL: claude-sonnet-5
+    ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-8
+    ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-5
+    ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-6
+    CLAUDE_CODE_EFFORT_LEVEL: high
+    CLAUDE_CODE_ALWAYS_ENABLE_EFFORT: "1"

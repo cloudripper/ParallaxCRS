@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crs-patcher-parallax"
+version = "1.0.0"
+description = "Vulnerability patching CRS for CRC@CSAW"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "gadgetcomplex"}]
+dependencies = []
+
+[project.scripts]
+run_patcher = "patcher:main"
+
+[tool.setuptools]
+py-modules = ["patcher"]
+
+[tool.setuptools.packages.find]
+include = ["agents", "agents.*"]
+
+[tool.setuptools.package-data]
+agents = ["*.md", "sections/*.md"]

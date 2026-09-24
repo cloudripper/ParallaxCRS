@@ -1,0 +1,41 @@
+##############################################################################
+#                        CRS Compose Configuration                           #
+#                  Example for crs-finder-claude-code                         #
+##############################################################################
+#
+# Two auth paths are shown below. Default is OAuth; uncomment the llm_config
+# block (and drop CLAUDE_CODE_OAUTH_TOKEN) to use an internal LiteLLM proxy.
+# The root `configs/finder-claude-code.yaml` is the supported local compose.
+##############################################################################
+
+# --- General Settings -------------------------------------------------------
+run_env: local
+docker_registry: local
+
+# --- Infrastructure ---------------------------------------------------------
+oss_crs_infra:
+  cpuset: "0-1"
+  memory: "8G"
+
+# --- LLM Configuration ------------------------------------------------------
+# Default (OAuth): leave llm_config unset and provide CLAUDE_CODE_OAUTH_TOKEN
+# below (run `claude setup-token` on the host first).
+#
+# LiteLLM alternative: uncomment, point config_path at a LiteLLM config, remove
+# CLAUDE_CODE_OAUTH_TOKEN, and export the upstream provider key.
+# llm_config:
+#   litellm:
+#     mode: internal
+#     internal:
+#       config_path: /absolute/path/to/litellm-config.yaml
+
+# --- CRS (crs-finder-claude-code) ------------------------------------------
+crs-finder-claude-code:
+  source:
+    local_path: /path/to/CRC-Template/crs/crs-finder-claude-code
+  cpuset: "2-7"                                      # UPDATE: available CPU cores
+  memory: "16G"                                      # UPDATE: available memory
+  llm_budget: 10                                     # LLM budget in USD (LiteLLM mode)
+  additional_env:
+    ANTHROPIC_MODEL: claude-opus-4-8
+    # AGENT_TIMEOUT: "0"   # seconds, 0 = no limit (default)

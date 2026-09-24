@@ -1,0 +1,54 @@
+name: crs-patcher-claude-code
+type:
+  - bug-fixing
+version: 1.0.0
+# Local Template default. Set an explicit REGISTRY in docker-bake.hcl only when
+# this derived CRS is intentionally published under a repository you control.
+docker_registry: local
+
+prepare_phase:
+  hcl: oss-crs/docker-bake.hcl
+
+target_build_phase:
+  - name: default-build
+    dockerfile: oss-crs/builder.Dockerfile
+    outputs:
+      - build
+      - src
+
+crs_run_phase:
+  patcher:
+    dockerfile: oss-crs/patcher.Dockerfile
+    additional_env:
+      # Default values. To override, set additional_env in compose yaml.
+      CRS_AGENT: claude_code
+      # Optional OAuth fallback. LiteLLM-mode wrappers explicitly clear this
+      # variable so Claude Code uses the framework-injected proxy instead.
+      CLAUDE_CODE_OAUTH_TOKEN: "${CLAUDE_CODE_OAUTH_TOKEN:-}"
+      # CLAUDE_CODE_CLI_VERSION: "2.1.42"  # Optional prepare-phase override for base image build
+      ANTHROPIC_MODEL: claude-opus-4-8
+      CLAUDE_CODE_SUBAGENT_MODEL: claude-sonnet-5
+      ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-8
+      ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-5
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-6
+      CLAUDE_CODE_EFFORT_LEVEL: high
+      CLAUDE_CODE_ALWAYS_ENABLE_EFFORT: "1"
+      # AGENT_TIMEOUT: "0"  # seconds, 0 = no limit (default)
+
+supported_target:
+  mode:
+    - full
+    - delta
+  language:  # language-agnostic — agent edits source, builder sidecar handles compilation
+    - c
+    - c++
+    - jvm
+  sanitizer:
+    - address
+  architecture:
+    - x86_64
+
+required_llms:
+  - claude-opus-4-8
+  - claude-sonnet-5
+  - claude-haiku-4-6
