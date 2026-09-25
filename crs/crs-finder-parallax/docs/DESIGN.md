@@ -87,8 +87,20 @@ For every promoted PoV, two artifacts:
 2. Group by `cluster` (falls back to `stack_hash`) and build **one prompt per
    cluster**. The current "your patch must fix all POV variants" instruction is
    impossible to satisfy when two unrelated bugs are in the fetched set.
-3. Enforce cc-fuzzer's patch gates, mapped to libCRS, before any write to
+3. Enforce cc-fuzzer's patch gates (`crs.check_patch` with the cluster's
+   PoVs and the `patch` block below), mapped to libCRS, before any write to
    `/patches` is allowed:
+
+   ```json
+   {"patch": {"build":     "command:/opt/crs/build.sh {patch}",
+              "pov":       "command:/opt/crs/pov.sh {pov} {harness}",
+              "pov_after": "command:/opt/crs/pov.sh {pov} {harness} --rebuild-id {build}",
+              "test":      "command:/opt/crs/test.sh {patch} {build}"}}
+   ```
+
+   `build.sh` wraps `apply-patch-build` and prints the rebuild id last;
+   `pov.sh` wraps `run-pov` and prints one `pov-run/v1` line.
+
 
    | cc-fuzzer gate | libCRS |
    |---|---|
@@ -166,15 +178,21 @@ Topology (single top-level agent vs orchestrator plus subagents): open.
 
 ## 6. cc-fuzzer changes this depends on
 
-1. Authoritative verifier evidence: a `run-pov` confirmation must grade
-   `strong`, since every OSS-CRS binary is a libFuzzer build and local replay
-   alone grades `weak`.
+1. Authoritative verifier evidence **(done)**: `verification.authoritative:
+   true` makes a `run-pov` confirmation grade `strong`
+   (`evidence_source: "oracle"`), since every OSS-CRS binary is a libFuzzer
+   build and local replay alone grades `weak`.
 2. Configurable protected submission dir for the gate (hardcoded to
    `fuzz/findings/` today).
 3. Python 3.10 check in CI.
 4. `docs/EMBEDDING.md`: stop suggesting `prompts.render(..., "oss-fuzz")` for a
    CRS.
 5. Byte sensitivity map (§4.2) **(done)**.
+6. Patch gates through the host runner **(done)**: `patch.pov` /
+   `patch.pov_after` answer `pov-run/v1`, `{build}` carries the rebuild id,
+   `check_patch` takes a PoV cluster, and a moved crash is `does_not_fix`.
+7. Triage result carries `pov_sha256`, `original_sha256`, `frames`,
+   `sanitizer_excerpt` for the evidence record **(done)**.
 
 ## 7. Repo hygiene (separate commit)
 
